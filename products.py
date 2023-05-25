@@ -2,6 +2,7 @@
 The Products class represents has a
 Product class and its methods.
 """
+from promotions import Promotion
 
 
 class Product:
@@ -34,6 +35,14 @@ class Product:
         self.price = price
         self.quantity = quantity
         self.active = True
+        self.promotion = None
+
+    def get_price(self) -> float:
+        """
+        Getter function for price.
+        :return: price (float)
+        """
+        return self.price
 
     def get_quantity(self) -> int:
         """
@@ -75,7 +84,8 @@ class Product:
         """
         :return: a string that represents the product
         """
-        return f"{self.name}, Price: ${self.price}, Quantity: {self.quantity}"
+        return f"{self.name}, Price: ${self.price}, Quantity: {self.quantity}, " \
+               f"Promotion: {self.promotion.name if self.promotion else 'None'}"
 
     def buy(self, quantity: int) -> float:
         """
@@ -90,9 +100,23 @@ class Product:
             raise ValueError("Error while making order! Quantity larger than what exists")
 
         self.quantity -= quantity
+
         if self.quantity == 0:
             self.active = False
-        return self.price * quantity
+
+        total_price = self.price * quantity
+
+        if self.promotion:
+            total_price -= self.promotion.apply_promotion(self, quantity)
+
+        return total_price
+
+    def set_promotion(self, promotion: Promotion):
+        """
+        Setter for promotion.
+        param promotion: Promotion
+        """
+        self.promotion = promotion
 
 
 class NonStockedProduct(Product):
@@ -104,11 +128,20 @@ class NonStockedProduct(Product):
     def __init__(self, name: str, price: float):
         super().__init__(name, price, 0)
 
+    def buy(self, quantity: int) -> float:
+        total_price = self.price * quantity
+
+        if self.promotion:
+            total_price -= self.promotion.apply_promotion(self, quantity)
+
+        return total_price
+
     def show(self):
         """
         :return: a string that represents the product
         """
-        return f"{self.name}, Price: ${self.price}, Quantity: Unlimited"
+        return f"{self.name}, Price: ${self.price}, Quantity: Unlimited, " \
+               f"Promotion: {self.promotion.name if self.promotion else 'None'}"
 
 
 class LimitedProduct(Product):
@@ -124,25 +157,25 @@ class LimitedProduct(Product):
         self.max_quantity = maximum
 
     def buy(self, quantity: int) -> float:
-        """
-        Buys a given quantity of the product.
-        Returns the total price (float) of the purchase.
-        Updates the quantity of the product.
-        In case of a quantity over maximum, raises an Exception.
-        :param quantity: int
-        :return: the total price (float) of the purchase.
-        """
         if quantity > self.max_quantity:
             raise ValueError("Error while making order! "
                              f"Only {self.max_quantity} is allowed from this product!")
 
         self.quantity -= quantity
+
         if self.quantity == 0:
             self.active = False
-        return self.price * quantity
+
+        total_price = self.price * quantity
+
+        if self.promotion:
+            total_price -= self.promotion.apply_promotion(self, quantity)
+
+        return total_price
 
     def show(self):
         """
         :return: a string that represents the product
         """
-        return f"{self.name}, Price: ${self.price}, Limited to 1 per order!"
+        return f"{self.name}, Price: ${self.price}, Limited to 1 per order!, " \
+               f"Promotion: {self.promotion.name if self.promotion else 'None'}"

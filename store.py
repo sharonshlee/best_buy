@@ -39,7 +39,7 @@ class Store:
         Returns how many items are in the store in total.
         :return: quantity (int)
         """
-        return sum(product.quantity
+        return sum(product.get_quantity()
                    for product in self.products)
 
     def get_all_products(self) -> List[Product]:
@@ -57,11 +57,10 @@ class Store:
         Product (Product class) and quantity (int).
         Buys the products and returns the total price of the order.
         :param shopping_list: List[Tuple[Product, int]]
-        :return: total order price
+        :return: total order price (float)
         """
         return sum(product.buy(quantity)
-                   for product, quantity
-                   in shopping_list)
+                   for product, quantity in shopping_list)
 
     def show_all_products(self) -> str:
         """
