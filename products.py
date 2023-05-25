@@ -93,3 +93,56 @@ class Product:
         if self.quantity == 0:
             self.active = False
         return self.price * quantity
+
+
+class NonStockedProduct(Product):
+    """
+    Non-stock products in the store are not physical,
+    so we don’t need to keep track of their quantity.
+    """
+
+    def __init__(self, name: str, price: float):
+        super().__init__(name, price, 0)
+
+    def show(self):
+        """
+        :return: a string that represents the product
+        """
+        return f"{self.name}, Price: ${self.price}, Quantity: Unlimited"
+
+
+class LimitedProduct(Product):
+    """
+    Some products can only be purchased X times in an order.
+    For example - a shipping fee can only be added once.
+    If an order is attempted with quantity larger
+    than the maximum one, it should be refused with an exception.
+    """
+
+    def __init__(self, name: str, price: float, quantity: int, maximum: int):
+        super().__init__(name, price, quantity)
+        self.max_quantity = maximum
+
+    def buy(self, quantity: int) -> float:
+        """
+        Buys a given quantity of the product.
+        Returns the total price (float) of the purchase.
+        Updates the quantity of the product.
+        In case of a quantity over maximum, raises an Exception.
+        :param quantity: int
+        :return: the total price (float) of the purchase.
+        """
+        if quantity > self.max_quantity:
+            raise ValueError("Error while making order! "
+                             f"Only {self.max_quantity} is allowed from this product!")
+
+        self.quantity -= quantity
+        if self.quantity == 0:
+            self.active = False
+        return self.price * quantity
+
+    def show(self):
+        """
+        :return: a string that represents the product
+        """
+        return f"{self.name}, Price: ${self.price}, Limited to 1 per order!"
