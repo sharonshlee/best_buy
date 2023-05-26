@@ -19,28 +19,28 @@ class Store:
         Initiator method that hold all the products.
         :param products: List[Product]
         """
-        self.products = products
+        self._products = products
 
     def add_product(self, product: Product):
         """
         Add a product to store
         :param product: Product
         """
-        self.products.append(product)
+        self._products.append(product)
 
     def remove_product(self, product: Product):
         """
         Removes a product from store.
         """
-        self.products.remove(product)
+        self._products.remove(product)
 
     def get_total_quantity(self) -> int:
         """
         Returns how many items are in the store in total.
         :return: quantity (int)
         """
-        return sum(product.get_quantity()
-                   for product in self.products)
+        return sum(product.quantity
+                   for product in self._products)
 
     def get_all_products(self) -> List[Product]:
         """
@@ -48,8 +48,8 @@ class Store:
         :return: active products
         """
         return [product
-                for product in self.products
-                if product.active]
+                for product in self._products
+                if product.is_active()]
 
     def order(self, shopping_list: List[Tuple[Product, int]]) -> float:
         """

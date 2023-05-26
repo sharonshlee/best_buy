@@ -15,7 +15,15 @@ class Promotion(ABC):
     """
 
     def __init__(self, name):
-        self.name = name
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, new_name):
+        self._name = new_name
 
     @abstractmethod
     def apply_promotion(self, product, quantity: int) -> float:
@@ -42,7 +50,7 @@ class SecondHalfPrice(Promotion):
         :return: discounted price (float)
         """
         if quantity > 1:
-            return product.get_price() / 2
+            return product.price / 2
         return 0
 
 
@@ -59,7 +67,7 @@ class ThirdOneFree(Promotion):
         :return: discounted price (float)
         """
         if quantity > 2:
-            return product.get_price()
+            return product.price
         return 0
 
 
@@ -70,7 +78,7 @@ class PercentDiscount(Promotion):
 
     def __init__(self, name: str, percent: int):
         super().__init__(name)
-        self.percent = percent
+        self._percent = percent
 
     def apply_promotion(self, product, quantity: int) -> float:
         """
@@ -79,4 +87,4 @@ class PercentDiscount(Promotion):
         :param quantity: int
         :return: discounted price (float)
         """
-        return product.get_price() * quantity * self.percent / 100
+        return product.price * quantity * self._percent / 100
